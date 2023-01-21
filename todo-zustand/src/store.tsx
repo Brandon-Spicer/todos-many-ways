@@ -1,4 +1,5 @@
 import create from "zustand";
+import { persist } from "zustand/middleware";
 
 // Standard interface and functions
 export interface Todo {
@@ -44,41 +45,47 @@ type Store = {
 };
 
 const useStore = create<Store>(
-  (set): Store => ({
-    todos: [],
-    newTodo: "",
-    setTodos: (todos: Todo[]) =>
-      set((state) => ({
-        ...state,
-        todos,
-      })),
-    removeTodo: (id: number) =>
-      set((state) => ({
-        ...state,
-        todos: removeTodo(state.todos, id),
-      })),
-    updateTodo: (id: number, text: string) =>
-      set((state) => ({
-        ...state,
-        todos: updateTodo(state.todos, id, text),
-      })),
-    toggleTodo: (id: number) =>
-      set((state) => ({
-        ...state,
-        todos: toggleTodo(state.todos, id),
-      })),
-    setNewTodo: (newTodo: string) =>
-      set((state) => ({
-        ...state,
-        newTodo,
-      })),
-    addTodo: () =>
-      set((state) => ({
-        ...state,
-        todos: addTodo(state.todos, state.newTodo),
-        newTodo: "",
-      })),
-  })
+  persist(
+    (set): Store => ({
+      todos: [],
+      newTodo: "",
+      setTodos: (todos: Todo[]) =>
+        set((state) => ({
+          ...state,
+          todos,
+        })),
+      removeTodo: (id: number) =>
+        set((state) => ({
+          ...state,
+          todos: removeTodo(state.todos, id),
+        })),
+      updateTodo: (id: number, text: string) =>
+        set((state) => ({
+          ...state,
+          todos: updateTodo(state.todos, id, text),
+        })),
+      toggleTodo: (id: number) =>
+        set((state) => ({
+          ...state,
+          todos: toggleTodo(state.todos, id),
+        })),
+      setNewTodo: (newTodo: string) =>
+        set((state) => ({
+          ...state,
+          newTodo,
+        })),
+      addTodo: () =>
+        set((state) => ({
+          ...state,
+          todos: addTodo(state.todos, state.newTodo),
+          newTodo: "",
+        })),
+    }),
+    {
+      name: "data-store",
+      getStorage: () => sessionStorage,
+    }
+  )
 );
 
 export default useStore;
